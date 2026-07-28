@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Task Planner & Manager</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.6; }
+        textarea { width: 100%; box-sizing: border-box; padding: 10px; font-size: 14px; }
+        button { background-color: #007bff; color: white; padding: 10px 20px; border: none; cursor: pointer; border-radius: 4px; font-size: 16px; margin-top: 10px; }
+        button:hover { background-color: #0056b3; }
+        .card { background: #f8f9fa; border-left: 4px solid #007bff; padding: 15px; margin-bottom: 20px; border-radius: 4px; }
+        pre { white-space: pre-wrap; font-family: inherit; margin: 0; }
+    </style>
+</head>
+<body>
+
+    <h1>🧠 AI Task Manager & Planner</h1>
+
+    <form method="POST">
+        <label for="tasks"><strong>Enter your raw task list:</strong></label><br><br>
+        <textarea id="tasks" name="tasks" rows="8" placeholder="e.g., Complete math assignment, grocery shopping, prepare presentation slides...">{{ request.form.get('tasks', '') }}</textarea>
+        <br>
+        <button type="submit">Generate Smart Plan</button>
+    </form>
+
+    {% if result %}
+        <hr style="margin: 30px 0;">
+
+        <h2>📋 Results Breakdown</h2>
+
+        <div class="card">
+            <h3>1. Summary</h3>
+            <pre>{{ result.summary }}</pre>
+        </div>
+
+        <div class="card">
+            <h3>2. Classification</h3>
+            <pre>{{ result.classification }}</pre>
+        </div>
+
+        <div class="card">
+            <h3>3. Priority Assessment</h3>
+            <pre>{{ result.priority }}</pre>
+        </div>
+
+        <div class="card" style="border-left-color: #28a745;">
+            <h3>4. Recommended Smart Plan</h3>
+            <pre>{{ result.plan }}</pre>
+        </div>
+    {% endif %}
+
+</body>
+</html>
