@@ -2,52 +2,163 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AI Task Planner & Manager</title>
+    <title>AI Task Planner & Tools</title>
     <style>
-        body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.6; }
-        textarea { width: 100%; box-sizing: border-box; padding: 10px; font-size: 14px; }
-        button { background-color: #007bff; color: white; padding: 10px 20px; border: none; cursor: pointer; border-radius: 4px; font-size: 16px; margin-top: 10px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; background-color: #f4f6f8; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .card { background: white; padding: 25px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+        textarea, input[type="text"] { width: 100%; padding: 12px; margin-top: 8px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        button { background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; }
         button:hover { background-color: #0056b3; }
-        .card { background: #f8f9fa; border-left: 4px solid #007bff; padding: 15px; margin-bottom: 20px; border-radius: 4px; }
-        pre { white-space: pre-wrap; font-family: inherit; margin: 0; }
+        .tool-btn { background-color: #28a745; }
+        .tool-btn:hover { background-color: #218838; }
+        pre { white-space: pre-wrap; background: #f8f9fa; padding: 14px; border-radius: 6px; border: 1px solid #e9ecef; font-family: monospace; }
+        h1 { color: #1a252f; text-align: center; margin-bottom: 30px; }
+        h2 { color: #2c3e50; margin-top: 0; border-bottom: 2px solid #e9ecef; padding-bottom: 8px; }
     </style>
 </head>
 <body>
 
-    <h1>🧠 AI Task Manager & Planner</h1>
+<div class="container">
+    <h1>🤖 AI Task Planner Dashboard</h1>
 
-    <form method="POST">
-        <label for="tasks"><strong>Enter your raw task list:</strong></label><br><br>
-        <textarea id="tasks" name="tasks" rows="8" placeholder="e.g., Complete math assignment, grocery shopping, prepare presentation slides...">{{ request.form.get('tasks', '') }}</textarea>
-        <br>
-        <button type="submit">Generate Smart Plan</button>
-    </form>
+    <!-- TASK 1 SECTION -->
+    <div class="card">
+        <h2>Task 1: AI Task Planner (Memory Active)</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="plan_tasks">
+            <label><strong>Enter your tasks or ask about past tasks:</strong></label>
+            <textarea name="tasks" rows="3" placeholder="e.g. Finish AI assignment due tomorrow at 5 PM"></textarea>
+            <button type="submit">Process Tasks</button>
+        </form>
 
-    {% if result %}
-        <hr style="margin: 30px 0;">
-
-        <h2>📋 Results Breakdown</h2>
-
-        <div class="card">
-            <h3>1. Summary</h3>
+        {% if result %}
+        <div style="margin-top: 20px;">
+            <h3>📋 Breakdown</h3>
+            <h4>1. Summary</h4>
             <pre>{{ result.summary }}</pre>
-        </div>
-
-        <div class="card">
-            <h3>2. Classification</h3>
+            <h4>2. Classification</h4>
             <pre>{{ result.classification }}</pre>
-        </div>
-
-        <div class="card">
-            <h3>3. Priority Assessment</h3>
+            <h4>3. Priority</h4>
             <pre>{{ result.priority }}</pre>
-        </div>
-
-        <div class="card" style="border-left-color: #28a745;">
-            <h3>4. Recommended Smart Plan</h3>
+            <h4>4. Recommended Smart Plan</h4>
             <pre>{{ result.plan }}</pre>
         </div>
-    {% endif %}
+        {% endif %}
+    </div>
 
+    <!-- TASK 2 SECTION -->
+    <div class="card">
+        <h2>Task 2: AI Tool Calling Assistant</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="query_tool">
+            <label><strong>Ask a query requiring Date/Time or Calculations:</strong></label>
+            <input type="text" name="tool_query" placeholder="e.g. How many days are left until my exam on August 15?">
+            <button type="submit" class="tool-btn">Ask AI Agent</button>
+        </form>
+
+        {% if tool_result %}
+        <div style="margin-top: 20px;">
+            <h3>🛠️ Agent Response:</h3>
+            <pre>{{ tool_result }}</pre>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<!-- TASK 3 SECTION: RAG DOCUMENT Q&A -->
+    <div class="card">
+        <h2>Task 3: Retrieval-Augmented Generation (RAG Document Q&A)</h2>
+
+        <!-- Step 1: File Upload Form -->
+        <form method="POST" enctype="multipart/form-data" style="margin-bottom: 20px;">
+            <input type="hidden" name="action" value="upload_doc">
+            <label><strong>1. Upload Document (PDF or DOCX):</strong></label><br>
+            <input type="file" name="file" accept=".pdf,.docx,.doc" required style="margin-top: 8px; margin-bottom: 8px;"><br>
+            <button type="submit" style="background-color: #17a2b8;">Upload & Index Document</button>
+        </form>
+
+        {% if rag_status %}
+        <p style="color: #28a745; font-weight: bold;">✅ {{ rag_status }}</p>
+        {% endif %}
+
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e9ecef;">
+
+        <!-- Step 2: Document Question Form -->
+        <form method="POST">
+            <input type="hidden" name="action" value="query_rag">
+            <label><strong>2. Ask a question based on uploaded document:</strong></label>
+            <input type="text" name="rag_query" placeholder="e.g. Summarize Chapter 2">
+            <button type="submit" style="background-color: #6f42c1;">Ask Document</button>
+        </form>
+
+        {% if rag_answer %}
+        <div style="margin-top: 20px;">
+            <h3>📄 Document Answer:</h3>
+            <pre>{{ rag_answer }}</pre>
+        </div>
+        {% endif %}
+    </div>
+<!-- TASK 4 SECTION: HUMAN-IN-THE-LOOP DECISION MAKING -->
+    <div class="card">
+        <h2>Task 4: Human-in-the-Loop Decision Making</h2>
+
+        {% if not current_plan %}
+        <!-- STEP 1: Enter tasks to create initial plan -->
+        <form method="POST">
+            <input type="hidden" name="action" value="create_draft_plan">
+            <label><strong>Enter tasks to generate an initial plan for review:</strong></label>
+            <textarea name="draft_tasks" rows="3" placeholder="e.g. 1. Study AI&#10;2. Sleep&#10;3. Complete Database Assignment" required></textarea>
+            <button type="submit" style="background-color: #fd7e14;">Generate Plan for Review</button>
+        </form>
+        {% endif %}
+
+        {% if current_plan %}
+        <div style="margin-top: 15px;">
+            <h3>📋 Current Plan Status: 
+                {% if plan_status == 'in_review' %}
+                <span style="color: #e67e22;">⏳ Pending Human Approval</span>
+                {% elif plan_status == 'approved' %}
+                <span style="color: #28a745;">✅ Finalized & Approved!</span>
+                {% endif %}
+            </h3>
+
+            <pre style="background: #ffffff; border: 2px solid #007bff; font-size: 15px;">{{ current_plan }}</pre>
+
+            {% if plan_status == 'in_review' %}
+            <!-- STEP 2: Feedback & Approval Controls -->
+            <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
+                <!-- Approve Button -->
+                <form method="POST">
+                    <input type="hidden" name="action" value="approve_plan">
+                    <button type="submit" style="background-color: #28a745; font-size: 16px; padding: 12px 24px;">✅ Approve Plan</button>
+                </form>
+                
+                <!-- Reset/Start Over -->
+                <form method="POST">
+                    <input type="hidden" name="action" value="reset_plan">
+                    <button type="submit" style="background-color: #dc3545;">🔄 Start Over</button>
+                </form>
+            </div>
+
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e9ecef;">
+
+            <!-- STEP 3: Request Modification -->
+            <form method="POST">
+                <input type="hidden" name="action" value="refine_plan">
+                <label><strong>Want to change this plan? Enter feedback to modify:</strong></label>
+                <input type="text" name="feedback" placeholder="e.g. Move AI study to the first priority because I have an exam tomorrow." required>
+                <button type="submit" style="background-color: #17a2b8;">Update & Regenerate Plan</button>
+            </form>
+            {% endif %}
+
+            {% if plan_status == 'approved' %}
+            <form method="POST" style="margin-top: 15px;">
+                <input type="hidden" name="action" value="reset_plan">
+                <button type="submit" style="background-color: #6c757d;">Create New Plan</button>
+            </form>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
 </body>
 </html>

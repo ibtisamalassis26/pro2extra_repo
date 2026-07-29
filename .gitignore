@@ -216,3 +216,18 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+# Uploads directory (Task 3 files)
+uploads/*
+!uploads/.gitkeep
+
+# Chroma Vector Database (Task 3 local storage)
+chroma_db/
+*.sqlite3
+
+# Python bytecode & cache
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
