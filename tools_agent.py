@@ -1,12 +1,22 @@
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
-from tools import get_current_datetime, calculator
+from tools import (
+    get_current_datetime, 
+    calculate_future_or_past_date, 
+    calculate_days_until, 
+    calculator
+)
 
 load_dotenv()
 
-# Bind available tools to the LLM model
-tools = [get_current_datetime, calculator]
+# Register all 4 tools
+tools = [
+    get_current_datetime, 
+    calculate_future_or_past_date, 
+    calculate_days_until, 
+    calculator
+]
 tools_by_name = {tool.name: tool for tool in tools}
 
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0).bind_tools(tools)
@@ -17,27 +27,24 @@ def run_tool_agent(user_prompt: str) -> str:
     messages = [
         SystemMessage(
             content=(
-                "You are a strict reasoning AI agent with tools. "
-                "Follow these rules:\n"
-                "1. If you need today's date, MUST call `get_current_datetime` first.\n"
-                "2. If you need to subtract dates or calculate numbers, MUST call `calculator` with the exact math expression.\n"
-                "3. Do NOT perform math in your head. Always delegate math to the `calculator` tool.\n"
-                "4. Synthesize the final answer using the outputs from the tools."
+                "You are a strict reasoning AI agent with specialized tools.\n"
+                "1. If asked about a date X days from now/past, MUST call `calculate_future_or_past_date(days)`.\n"
+                "2. If asked how many days remain until a specific future date, MUST call `calculate_days_until(target_date_str)` using YYYY-MM-DD format.\n"
+                "3. If you need the exact current timestamp, call `get_current_datetime`.\n"
+                "4. If you need standard mathematical calculations, call `calculator`.\n"
+                "5. Synthesize the final answer using tool responses."
             )
         ),
         HumanMessage(content=user_prompt),
     ]
 
-    # Max iteration count to prevent infinite loops
     for _ in range(5):
         response = llm.invoke(messages)
         messages.append(response)
 
-        # If no tool calls requested, we have our final answer
         if not response.tool_calls:
             return response.content
 
-        # Execute all requested tool calls
         for tool_call in response.tool_calls:
             tool_name = tool_call["name"]
             tool_args = tool_call["args"]
