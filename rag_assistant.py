@@ -8,7 +8,7 @@ from langchain_core.prompts import ChatPromptTemplate
 
 load_dotenv()
 
-# Global Chroma Vector Store reference
+
 vector_store = None
 
 
@@ -16,7 +16,7 @@ def process_and_index_document(file_path: str) -> str:
     """Loads a PDF or DOCX file, splits it into chunks, and indexes it into Chroma DB."""
     global vector_store
 
-    # 1. Determine loader based on file extension
+    
     ext = os.path.splitext(file_path)[-1].lower()
     if ext == ".pdf":
         loader = PyPDFLoader(file_path)
@@ -27,14 +27,14 @@ def process_and_index_document(file_path: str) -> str:
 
     docs = loader.load()
 
-    # 2. Split text into manageable chunks
+    
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000,
         chunk_overlap=100
     )
     chunks = text_splitter.split_documents(docs)
 
-    # 3. Store embeddings in Chroma Vector DB
+    
     embeddings = OpenAIEmbeddings()
     vector_store = Chroma.from_documents(chunks, embeddings)
 
@@ -48,13 +48,13 @@ def answer_rag_question(query: str) -> str:
     if vector_store is None:
         return "Please upload and process a document first before asking questions."
 
-    # 1. Retrieve top 3 relevant chunks
+    
     retriever = vector_store.as_retriever(search_kwargs={"k": 3})
     relevant_docs = retriever.invoke(query)
 
     context_text = "\n\n---\n\n".join([doc.page_content for doc in relevant_docs])
 
-    # 2. Enforce strict prompt context constraint
+    
     prompt = ChatPromptTemplate.from_template("""
 You are a helpful assistant that answers questions strictly based on the provided document context.
 
