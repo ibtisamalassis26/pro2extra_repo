@@ -3,7 +3,7 @@ import uuid
 from flask import Flask, render_template, request, session
 from werkzeug.utils import secure_filename
 
-# Imports for your specific task modules
+
 from graph import task_graph
 from tools_agent import run_tool_agent
 from rag_assistant import process_and_index_document, answer_rag_question
@@ -19,11 +19,10 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    # Maintain user thread ID for stateful memory
     if "thread_id" not in session:
         session["thread_id"] = str(uuid.uuid4())
 
-    # Ensure Task 4 session variables exist
+
     if "current_plan" not in session:
         session["current_plan"] = None
     if "plan_status" not in session:
@@ -37,9 +36,8 @@ def home():
     if request.method == "POST":
         action = request.form.get("action")
 
-        # ----------------------------------------------------
-        # TASK 1: Task Planner with LangGraph Memory
-        # ----------------------------------------------------
+        
+        # TASK 1
         if action == "plan_tasks":
             tasks_input = request.form.get("tasks", "")
             if tasks_input.strip():
@@ -48,7 +46,7 @@ def home():
                     {"tasks": [tasks_input]}, config=config
                 )
 
-                # Format graph response to match index.html key expectations
+                
                 if isinstance(raw_graph_output, dict):
                     plan_result = {
                         "summary": raw_graph_output.get("summary", ""),
@@ -59,17 +57,16 @@ def home():
                 else:
                     plan_result = {"plan": str(raw_graph_output)}
 
-        # ----------------------------------------------------
-        # TASK 2: AI Tool Calling Assistant
-        # ----------------------------------------------------
+        
+        # TASK 2
         elif action == "query_tool":
             tool_query = request.form.get("tool_query", "")
             if tool_query.strip():
                 tool_result = run_tool_agent(tool_query)
 
-        # ----------------------------------------------------
-        # TASK 3: Document Upload (RAG)
-        # ----------------------------------------------------
+        
+        # TASK 3
+        
         elif action == "upload_doc":
             if "file" in request.files:
                 file = request.files["file"]
@@ -79,15 +76,15 @@ def home():
                     file.save(file_path)
                     rag_status = process_and_index_document(file_path)
 
-        # TASK 3: Ask Document Question (RAG)
+        
         elif action == "query_rag":
             rag_query = request.form.get("rag_query", "")
             if rag_query.strip():
                 rag_answer = answer_rag_question(rag_query)
 
-        # ----------------------------------------------------
-        # TASK 4: Human-in-the-Loop Decision Making
-        # ----------------------------------------------------
+        
+        # TASK 4
+        
         elif action == "create_draft_plan":
             draft_tasks = request.form.get("draft_tasks", "")
             if draft_tasks.strip():
