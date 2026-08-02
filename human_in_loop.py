@@ -15,7 +15,7 @@ def clean_markdown(text: str) -> str:
   return text.strip()
 
 
-# Prompt 1: Initial Plan Generation with detailed breakdown
+
 initial_plan_prompt = ChatPromptTemplate.from_template("""
 You are an expert AI productivity assistant. Based on the following raw tasks provided by the user, create a structured, detailed, step-by-step actionable plan.
 
@@ -30,7 +30,7 @@ User Tasks:
 Detailed Actionable Plan:
 """)
 
-# Prompt 2: Refine Plan based on Human Feedback with detailed breakdown
+
 refine_plan_prompt = ChatPromptTemplate.from_template("""
 You are an expert AI productivity assistant. The user wants to modify their current task plan.
 

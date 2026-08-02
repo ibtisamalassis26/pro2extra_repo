@@ -10,7 +10,6 @@ from tools import (
 
 load_dotenv()
 
-# Register all 4 tools
 tools = [
     get_current_datetime, 
     calculate_future_or_past_date, 
@@ -19,7 +18,7 @@ tools = [
 ]
 tools_by_name = {tool.name: tool for tool in tools}
 
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0).bind_tools(tools)
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7).bind_tools(tools)
 
 
 def run_tool_agent(user_prompt: str) -> str:

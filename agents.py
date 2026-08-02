@@ -3,7 +3,7 @@ from langchain_openai import ChatOpenAI
 
 load_dotenv()
 
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.6)
 
 
 def clean(text: str) -> str:
@@ -18,7 +18,6 @@ def clean(text: str) -> str:
 
 
 def summarize_tasks(state: dict) -> dict:
-    # Combine past and present tasks if state["tasks"] is a list
     all_tasks = "\n".join(state["tasks"]) if isinstance(state["tasks"], list) else state["tasks"]
 
     prompt = f"""

@@ -1,4 +1,4 @@
-
+# pro2extra_repo
 # Multi-Task AI Web Application
 
 A Flask-based AI web application demonstrating 4 core LLM architectures using LangChain and LangGraph.
@@ -13,5 +13,4 @@ A Flask-based AI web application demonstrating 4 core LLM architectures using La
 1. Clone the repo: `git clone <repo-url>`
 2. Create virtual environment: `python -m venv venv && source venv/bin/activate`
 3. Install dependencies: `pip install -r requirements.txt`
-4. Set `.env`: `OPENAI_API_KEY=your_key_here`
-5. Run application: `python app.py`
+4. Run application: `python app.py`
